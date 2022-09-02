@@ -1,23 +1,36 @@
 import { NextPage } from "next";
 import Image from "next/image";
-import React from "react";
+import Link from "next/link";
 
 import {
-  SearchIcon,
-  PlusCircleIcon,
-  UserGroupIcon,
   HeartIcon,
-  PaperAirplaneIcon,
   MenuIcon,
+  PaperAirplaneIcon,
+  PlusCircleIcon,
+  SearchIcon,
+  UserGroupIcon,
 } from "@heroicons/react/outline";
 
 import { HomeIcon } from "@heroicons/react/solid";
+import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useRecoilState } from "recoil";
+import { modalState } from "../atoms/modalAtom";
 
 const Header: NextPage = () => {
+  const { data: session } = useSession();
+  const [open, setOpen] = useRecoilState(modalState);
+  const router = useRouter();
+
+  console.log(open, setOpen);
+
   return (
     <div className="sticky shadow-sm border-b bg-white top-0 z-50">
       <div className="flex items-center justify-between max-w-6xl lg:mx-auto mx-5">
-        <div className="ralative w-24  hidden lg:inline-grid cursor-pointer">
+        <div
+          onClick={() => router.push("/")}
+          className="ralative w-24  hidden lg:inline-grid cursor-pointer"
+        >
           <Image
             height={96}
             width={96}
@@ -60,14 +73,21 @@ const Header: NextPage = () => {
             </div>
           </div>
           <HeartIcon className="navBtn" />
-          <PlusCircleIcon className="navBtn" />
+          <PlusCircleIcon onClick={() => setOpen(true)} className="navBtn" />
           <UserGroupIcon className="navBtn" />
 
-          <img
-            className="h-10 rounded-full object-contain cursor-pointer"
-            src="https://avatars.githubusercontent.com/u/62041703?v=4"
-            alt="profile pic"
-          />
+          {session?.user ? (
+            <img
+              onClick={() => signOut()}
+              className="h-10 rounded-full object-contain cursor-pointer"
+              src={session.user.image as string}
+              alt="profile pic"
+            />
+          ) : (
+            <div className="text-blue-400 text-md font-semibold">
+              <Link href="/auth/signin">Signin</Link>
+            </div>
+          )}
         </div>
       </div>
     </div>
