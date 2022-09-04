@@ -28,6 +28,9 @@ const Stories: NextPage = () => {
           suggestion={{
             avatar: session.user?.image as string,
             username: session.user?.name as string,
+            userId: session.user?.email as string,
+            email: session.user?.email as string,
+            id: 1000000,
           }}
         />
       )}
