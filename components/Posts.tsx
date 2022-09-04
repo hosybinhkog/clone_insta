@@ -1,29 +1,45 @@
-import { faker } from "@faker-js/faker";
+import {
+  collection,
+  DocumentData,
+  onSnapshot,
+  orderBy,
+  query,
+  QueryDocumentSnapshot,
+} from "firebase/firestore";
 import { NextPage } from "next";
-import React, { useEffect, useState } from "react";
-import { Post } from "../types";
+import { useEffect, useState } from "react";
+import { db } from "../firebase";
 import PostComponent from "./Post";
 
 const Posts: NextPage = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [postsByFireBase, setPostsFireBase] = useState<
+    QueryDocumentSnapshot<DocumentData>[]
+  >([]);
 
   useEffect(() => {
-    const posts = [...Array(20)].map((_, i) => ({
-      username: faker.internet.userName(),
-      userImg: faker.image.avatar(),
-      img: faker.image.image(),
-      id: i,
-      caption: faker.lorem.paragraph(),
-    }));
-
-    setPosts(posts);
-  }, []);
+    return onSnapshot(
+      query(collection(db, "posts"), orderBy("timestamp", "desc")),
+      (snapshot) => {
+        setPostsFireBase(snapshot.docs);
+      }
+    );
+  }, [db]);
 
   return (
     <div>
-      {posts?.map((post) => (
-        <PostComponent key={post.id} post={post} />
-      ))}
+      {postsByFireBase &&
+        postsByFireBase.map((post) => (
+          <PostComponent
+            key={post.id}
+            post={{
+              id: post.id,
+              username: post.data().username,
+              userImg: post.data().profileImg,
+              img: post.data().image,
+              caption: post.data().cation,
+            }}
+          />
+        ))}
     </div>
   );
 };

@@ -1,8 +1,8 @@
-import { ChevronUpIcon } from "@heroicons/react/outline";
 import type { NextPage } from "next";
 import Head from "next/head";
 import Feed from "../components/Feed";
 import Header from "../components/Header";
+import Modal from "../components/Modal";
 
 const Home: NextPage = () => {
   return (
@@ -13,7 +13,7 @@ const Home: NextPage = () => {
       <Header />
 
       <Feed />
-
+      <Modal />
       <div className="text-center mt-10 text-xs text-gray-400">
         Hello i'm a instagram
       </div>
